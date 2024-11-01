@@ -1,0 +1,15 @@
+version="0.0.1"
+
+[zeus]
+domain="zeus"
+http-port=30100
+grpc-port=30101
+log-file="/var/log/zeus.log"
+
+[mysql]
+domain="172.16.31.48"
+port=30306
+user="root"
+password="12345679"
+database="zeus"
+
