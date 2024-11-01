@@ -12,6 +12,13 @@ service Manager {
   rpc UpdateKPoint(UpdateKPointRequest) returns (UpdateKPointResponse) {}
   rpc GetKPoint(GetKPointRequest) returns (GetKPointResponse) {}
   rpc GetKPoints(GetKPointsRequest) returns (GetKPointsResponse) {}
+  rpc GetKPointsForLine(GetKPointsForLineRequest)
+      returns (GetKPointsForLineResponse) {
+    option (google.api.http) = {
+      post : "/v1/get/kpoints/for/line"
+      body : "*"
+    };
+  }
   rpc ExistKPoint(ExistKPointRequest) returns (ExistKPointResponse) {}
   rpc ExistKPointConds(ExistKPointCondsRequest)
       returns (ExistKPointCondsResponse) {}
@@ -80,6 +87,31 @@ message GetKPointsRequest {
 message GetKPointsResponse {
   repeated KPoint Infos = 10;
   uint32 Total = 20;
+}
+
+message KPointForLine {
+  // open close low high
+  repeated double Nums = 10;
+  // start time -> end time
+  repeated uint32 Times = 20;
+}
+
+message GetKPointsForLineRequest {
+  uint32 OriginalTime = 10;
+  basetype.KPointType KPointType = 20;
+  uint32 TokenPairID = 30;
+  int32 Offset = 40;
+  int32 Limit = 50;
+}
+
+message GetKPointsForLineResponse {
+  uint32 OriginalTime = 10;
+  basetype.KPointType KPointType = 20;
+  uint32 TokenPairID = 30;
+  int32 Offset = 40;
+  int32 Limit = 50;
+  repeated KPointForLine KPoints = 60;
+  uint32 Total = 70;
 }
 
 message UpdateKPointRequest { KPointReq Info = 10; }

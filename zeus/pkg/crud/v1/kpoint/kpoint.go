@@ -154,6 +154,8 @@ func SetQueryConds(q *ent.KPointQuery, conds *Conds) (*ent.KPointQuery, error) {
 			q.Where(kpointent.StartTimeGT(startat))
 		case cruder.GTE:
 			q.Where(kpointent.StartTimeGTE(startat))
+		case cruder.EQ:
+			q.Where(kpointent.StartTimeGTE(startat))
 		default:
 			return nil, fmt.Errorf("invalid startat field")
 		}
@@ -171,6 +173,8 @@ func SetQueryConds(q *ent.KPointQuery, conds *Conds) (*ent.KPointQuery, error) {
 		case cruder.GT:
 			q.Where(kpointent.EndTimeGT(endat))
 		case cruder.GTE:
+			q.Where(kpointent.EndTimeGTE(endat))
+		case cruder.EQ:
 			q.Where(kpointent.EndTimeGTE(endat))
 		default:
 			return nil, fmt.Errorf("invalid endat field")

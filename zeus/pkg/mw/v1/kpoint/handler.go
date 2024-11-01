@@ -15,10 +15,11 @@ import (
 
 type Handler struct {
 	kpointcrud.Req
-	Reqs   []*kpointcrud.Req
-	Conds  *kpointcrud.Conds
-	Offset int32
-	Limit  int32
+	Reqs         []*kpointcrud.Req
+	Conds        *kpointcrud.Conds
+	OriginalTime *uint32
+	Offset       int32
+	Limit        int32
 }
 
 func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) error) (*Handler, error) {
@@ -167,6 +168,20 @@ func WithEndTime(endtime *uint32, must bool) func(context.Context, *Handler) err
 		}
 
 		h.EndTime = endtime
+		return nil
+	}
+}
+
+func WithOriginalTime(originaltime *uint32, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if originaltime == nil {
+			if must {
+				return fmt.Errorf("invalid originaltime")
+			}
+			return nil
+		}
+
+		h.OriginalTime = originaltime
 		return nil
 	}
 }

@@ -19,13 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Manager_CreateKPoint_FullMethodName     = "/kline.v1.kpoint.Manager/CreateKPoint"
-	Manager_UpdateKPoint_FullMethodName     = "/kline.v1.kpoint.Manager/UpdateKPoint"
-	Manager_GetKPoint_FullMethodName        = "/kline.v1.kpoint.Manager/GetKPoint"
-	Manager_GetKPoints_FullMethodName       = "/kline.v1.kpoint.Manager/GetKPoints"
-	Manager_ExistKPoint_FullMethodName      = "/kline.v1.kpoint.Manager/ExistKPoint"
-	Manager_ExistKPointConds_FullMethodName = "/kline.v1.kpoint.Manager/ExistKPointConds"
-	Manager_DeleteKPoint_FullMethodName     = "/kline.v1.kpoint.Manager/DeleteKPoint"
+	Manager_CreateKPoint_FullMethodName      = "/kline.v1.kpoint.Manager/CreateKPoint"
+	Manager_UpdateKPoint_FullMethodName      = "/kline.v1.kpoint.Manager/UpdateKPoint"
+	Manager_GetKPoint_FullMethodName         = "/kline.v1.kpoint.Manager/GetKPoint"
+	Manager_GetKPoints_FullMethodName        = "/kline.v1.kpoint.Manager/GetKPoints"
+	Manager_GetKPointsForLine_FullMethodName = "/kline.v1.kpoint.Manager/GetKPointsForLine"
+	Manager_ExistKPoint_FullMethodName       = "/kline.v1.kpoint.Manager/ExistKPoint"
+	Manager_ExistKPointConds_FullMethodName  = "/kline.v1.kpoint.Manager/ExistKPointConds"
+	Manager_DeleteKPoint_FullMethodName      = "/kline.v1.kpoint.Manager/DeleteKPoint"
 )
 
 // ManagerClient is the client API for Manager service.
@@ -36,6 +37,7 @@ type ManagerClient interface {
 	UpdateKPoint(ctx context.Context, in *UpdateKPointRequest, opts ...grpc.CallOption) (*UpdateKPointResponse, error)
 	GetKPoint(ctx context.Context, in *GetKPointRequest, opts ...grpc.CallOption) (*GetKPointResponse, error)
 	GetKPoints(ctx context.Context, in *GetKPointsRequest, opts ...grpc.CallOption) (*GetKPointsResponse, error)
+	GetKPointsForLine(ctx context.Context, in *GetKPointsForLineRequest, opts ...grpc.CallOption) (*GetKPointsForLineResponse, error)
 	ExistKPoint(ctx context.Context, in *ExistKPointRequest, opts ...grpc.CallOption) (*ExistKPointResponse, error)
 	ExistKPointConds(ctx context.Context, in *ExistKPointCondsRequest, opts ...grpc.CallOption) (*ExistKPointCondsResponse, error)
 	DeleteKPoint(ctx context.Context, in *DeleteKPointRequest, opts ...grpc.CallOption) (*DeleteKPointResponse, error)
@@ -85,6 +87,15 @@ func (c *managerClient) GetKPoints(ctx context.Context, in *GetKPointsRequest, o
 	return out, nil
 }
 
+func (c *managerClient) GetKPointsForLine(ctx context.Context, in *GetKPointsForLineRequest, opts ...grpc.CallOption) (*GetKPointsForLineResponse, error) {
+	out := new(GetKPointsForLineResponse)
+	err := c.cc.Invoke(ctx, Manager_GetKPointsForLine_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *managerClient) ExistKPoint(ctx context.Context, in *ExistKPointRequest, opts ...grpc.CallOption) (*ExistKPointResponse, error) {
 	out := new(ExistKPointResponse)
 	err := c.cc.Invoke(ctx, Manager_ExistKPoint_FullMethodName, in, out, opts...)
@@ -120,6 +131,7 @@ type ManagerServer interface {
 	UpdateKPoint(context.Context, *UpdateKPointRequest) (*UpdateKPointResponse, error)
 	GetKPoint(context.Context, *GetKPointRequest) (*GetKPointResponse, error)
 	GetKPoints(context.Context, *GetKPointsRequest) (*GetKPointsResponse, error)
+	GetKPointsForLine(context.Context, *GetKPointsForLineRequest) (*GetKPointsForLineResponse, error)
 	ExistKPoint(context.Context, *ExistKPointRequest) (*ExistKPointResponse, error)
 	ExistKPointConds(context.Context, *ExistKPointCondsRequest) (*ExistKPointCondsResponse, error)
 	DeleteKPoint(context.Context, *DeleteKPointRequest) (*DeleteKPointResponse, error)
@@ -141,6 +153,9 @@ func (UnimplementedManagerServer) GetKPoint(context.Context, *GetKPointRequest) 
 }
 func (UnimplementedManagerServer) GetKPoints(context.Context, *GetKPointsRequest) (*GetKPointsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetKPoints not implemented")
+}
+func (UnimplementedManagerServer) GetKPointsForLine(context.Context, *GetKPointsForLineRequest) (*GetKPointsForLineResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetKPointsForLine not implemented")
 }
 func (UnimplementedManagerServer) ExistKPoint(context.Context, *ExistKPointRequest) (*ExistKPointResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExistKPoint not implemented")
@@ -236,6 +251,24 @@ func _Manager_GetKPoints_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Manager_GetKPointsForLine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetKPointsForLineRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ManagerServer).GetKPointsForLine(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Manager_GetKPointsForLine_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ManagerServer).GetKPointsForLine(ctx, req.(*GetKPointsForLineRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Manager_ExistKPoint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ExistKPointRequest)
 	if err := dec(in); err != nil {
@@ -312,6 +345,10 @@ var Manager_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetKPoints",
 			Handler:    _Manager_GetKPoints_Handler,
+		},
+		{
+			MethodName: "GetKPointsForLine",
+			Handler:    _Manager_GetKPointsForLine_Handler,
 		},
 		{
 			MethodName: "ExistKPoint",

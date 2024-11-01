@@ -3,9 +3,11 @@ package kpoint
 import (
 	"context"
 	"fmt"
+	"time"
 
 	basetype "github.com/Geapefurit/kline-back/proto/kline/basetype/v1"
 	kpointproto "github.com/Geapefurit/kline-back/proto/kline/zeus/v1/kpoint"
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	"github.com/Geapefurit/kline-back/zeus/pkg/db"
 	"github.com/Geapefurit/kline-back/zeus/pkg/db/ent"
@@ -171,4 +173,60 @@ func (h *Handler) GetLatestKPoints(ctx context.Context) ([]*kpointproto.KPoint, 
 		return nil, 0, err
 	}
 	return handler.infos, handler.total, nil
+}
+
+func convKPoint(item *kpointproto.KPoint) *kpointproto.KPointForLine {
+	return &kpointproto.KPointForLine{
+		Nums:  []float64{item.Open, item.Close, item.Low, item.High},
+		Times: []uint32{item.StartTime, item.EndTime},
+	}
+}
+
+func convKPoints(items []*kpointproto.KPoint) []*kpointproto.KPointForLine {
+	ret := make([]*kpointproto.KPointForLine, len(items))
+	for i, v := range items {
+		ret[i] = convKPoint(v)
+	}
+	return ret
+}
+
+func (h *Handler) GetKPointsForLine(ctx context.Context) ([]*kpointproto.KPointForLine, uint32, error) {
+	if h.Offset*h.Limit < 0 || h.Limit == 0 {
+		return nil, 0, fmt.Errorf("invalid offset and limit")
+	}
+
+	if h.OriginalTime == nil || *h.OriginalTime == 0 {
+		now := uint32(time.Now().Unix())
+		h.OriginalTime = &now
+	}
+
+	h.Conds.EndAt = &cruder.Cond{
+		Op:  cruder.GTE,
+		Val: *h.OriginalTime,
+	}
+
+	if h.Offset < 0 {
+		h.Offset = -h.Offset
+	}
+
+	forward := false
+	if h.Limit < 0 {
+		h.Limit = -h.Limit
+		forward = true
+		h.Conds.EndAt.Op = cruder.LTE
+	}
+
+	var kpoints []*kpointproto.KPoint
+	var total uint32
+	var err error
+	if forward {
+		kpoints, total, err = h.GetEarlistKPoints(ctx)
+	} else {
+		kpoints, total, err = h.GetLatestKPoints(ctx)
+	}
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return convKPoints(kpoints), total, nil
 }

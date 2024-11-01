@@ -15,7 +15,40 @@
   "produces": [
     "application/json"
   ],
-  "paths": {},
+  "paths": {
+    "/v1/get/kpoints/for/line": {
+      "post": {
+        "operationId": "Manager_GetKPointsForLine",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/kpointGetKPointsForLineResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/kpointGetKPointsForLineRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Manager"
+        ]
+      }
+    }
+  },
   "definitions": {
     "basetypeKPointType": {
       "type": "string",
@@ -121,6 +154,64 @@
         }
       }
     },
+    "kpointGetKPointsForLineRequest": {
+      "type": "object",
+      "properties": {
+        "OriginalTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "KPointType": {
+          "$ref": "#/definitions/basetypeKPointType"
+        },
+        "TokenPairID": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Offset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Limit": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "kpointGetKPointsForLineResponse": {
+      "type": "object",
+      "properties": {
+        "OriginalTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "KPointType": {
+          "$ref": "#/definitions/basetypeKPointType"
+        },
+        "TokenPairID": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Offset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "KPoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/kpointKPointForLine"
+          }
+        },
+        "Total": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "kpointGetKPointsResponse": {
       "type": "object",
       "properties": {
@@ -195,6 +286,27 @@
           "type": "integer",
           "format": "int64",
           "title": "@inject_tag: sql:\"updated_at\""
+        }
+      }
+    },
+    "kpointKPointForLine": {
+      "type": "object",
+      "properties": {
+        "Nums": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "title": "open close low high"
+        },
+        "Times": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": "start time -\u003e end time"
         }
       }
     },

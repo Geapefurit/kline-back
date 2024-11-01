@@ -1,6 +1,8 @@
 package kpoint
 
 import (
+	"context"
+
 	kpoint "github.com/Geapefurit/kline-back/proto/kline/zeus/v1/kpoint"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -16,5 +18,5 @@ func Register(server grpc.ServiceRegistrar) {
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
-	return nil
+	return kpoint.RegisterManagerHandlerFromEndpoint(context.Background(), mux, endpoint, opts)
 }
